@@ -155,26 +155,42 @@ function removeRecipe(name,liElement){
     //remove from DOM
     liElement.remove();
 }
-
-// //teells the browser that when page hass fully loaded run the function
-// window.addEventListener("DOMContentLoaded", () => {
-//       //json.parse changes the saved string back to an array
-//   //local storage.getitem is used to read the saved recipesfrom the local bworsers storage and the [] is used to  mean if what is got is nullthen it should return empty array [] instead 
-//   const saved = JSON.parse(localStorage.getItem("savedRecipes")) || [];
-//     //add the  previous saved recipe intothe current working list
-//   savedRecipes.push(...saved);
-//    //loop 
-//   saved.forEach(name => {
-//     //create an new li with the recipe name
-//     const li = document.createElement("li");
-//     li.textContent = name;
-//      // add the saved list on the page
-    
-//      savedList.appendChild(li);
-//   });
-// });
 window.addEventListener("DOMContentLoaded",()=>{
     savedRecipes.forEach(name=>{
         addRecipeToDom(name);
     })
 })
+
+
+async function fetchRecipes(ingredients) {
+  //result clear the previus  result and shows a message
+  resultsContainer.innerHTML = "<p>Searching...</p>";
+  //spilt te selected ingredient to an array this will help to loop thru and search each ingredient
+  const ingredientArray = ingredients.split(","); 
+  //we use an empty array to collect the meal from each ingreduent search
+  const allMeals = [];
+  //lop thru each ingredient and fetch its meals 
+  //it send thre requestto the api and api return meals add add them to the empty array
+
+  for (const ingredient of ingredientArray) {
+    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`);
+    const data = await res.json();
+    if (data.meals) {
+      allMeals.push(...data.meals);
+    }
+  }
+   //if more than one ingredient is choose continue
+  if (allMeals.length > 0) {
+  //remove duplicates
+  //Array.from converts it back into an array
+    const uniqueMeals = Array.from(
+      // create a map with a keys that are unique 
+      //. values which will extract only one copy 
+      new Map(allMeals.map(meal => [meal.idMeal, meal])).values()
+    );
+    displayRecipes(uniqueMeals);
+    //if no items are found return
+  } else {
+    resultsContainer.innerHTML = "<p>No recipes found for the selected ingredients.</p>";
+  }
+}

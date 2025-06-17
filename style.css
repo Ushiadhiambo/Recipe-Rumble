@@ -7,10 +7,6 @@ body {
   background-repeat: repeat;
   background-size: cover;
   height: 90vh;
-  
-
-  
- 
 }
   
 .inputs input {
@@ -25,7 +21,7 @@ select {
 h1{
     color:rgb(136, 9, 209);
     font-size: 5em;
-    margin-top: 30%;
+    margin-top: 25%;
 }
 h2 {
   color: rgb(0, 0, 0);
